@@ -15,3 +15,36 @@ another description.
     <paste offending line(s) of code here>
 
 # many more come here
+
+[http.c:65]
+process_client() function of zookd.c calls the function http_request_line(), an overflow can happen if the sizeof(buf) > 4096 (Also,http_read_line() called from the http_request_line(), doesn't check for the size of the buffer).
+Stack canaries cannot prevent this vulnerability.
+
+	    if (http_read_line(fd, buf) < 0)
+
+[http.c:87]
+The pointer envp can be made to access a bad location when buf overflows(sizeof(buf) > 4096). This makes it to be vulnerable to a server-crash due to a segmentation fault [process_client() function of zookd.c calls the function http_request_line()].Stack canaries cannot prevent this.
+
+	    envp += sprintf(envp, "REQUEST_METHOD=%s", buf) + 1;
+
+[http.c:121]
+zookfs.c calls the function http_request_headers(), an overflow can happen if the sizeof(buf) > 4096 (Also,http_read_line() called from the http_request_headers(), doesn't check for the size of the buffer).
+Stack canaries cannot prevent this vulnerability.
+
+        if (http_read_line(fd, buf) < 0)
+
+[http.c:304]
+Here the sizeof(buf)=1024.Size of pn is not checked here, if it exceeds 1024, it will cause an overflow to the buf.  
+Stack canaries cannot prevent this vulnerability.
+
+        sprintf(buf, "%s%s", pn, getenv("PATH_INFO"));
+
+[http.c:274]
+zookfs.c calls the function http_serve(), an overflow can happen to the pn, if the sizeof(pn+name) before excuting the line 274 exceeds 1024.Handler is overwritten and as well as the return address. This can be prevented using Stack canaries.
+	
+	    strcat(pn, name);
+
+[zookld.c:203]
+For some str_nul,the RHS could exceed the actual size of gids[](i.e.,256) causing an overflow.
+        
+        gids[ngids++] = strtol(str_nul, NULL, 10);

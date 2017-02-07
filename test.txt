@@ -1,0 +1,9 @@
+HTTP request:
+GET / HTTP/1.0
+
+Connecting to localhost:8080...
+Connected, sending request...
+Request sent, waiting for reply...
+Received reply.
+HTTP response:
+

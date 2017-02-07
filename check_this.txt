@@ -1,0 +1,261 @@
+(gdb) p &envlen
+No symbol "envlen" in current context.
+(gdb) p &en
+endaliasent           endnetgrent_hook      endttyent             entry                 envz_entry
+endent_function       endorder              endusershell          enum_t                envz_get
+endfsent              end_pattern           endutent              env                   envz_merge
+end_function          endprotoent           endutent_file         env_deserialize       envz_remove
+endgrent              endpwent              endutent_unknown      environ               envz_strip
+endhostent            endrpcent             endutxent             env_len               
+endmntent             endservent            end_wpattern          envlock               
+endnetent             endsgent              enlarge_userbuf       env_path_list         
+endnetgrent           endspent              enlarge_userbuf.part  envz_add              
+(gdb) p fd
+$4 = 5
+(gdb) p reqpath
+$5 = "/zoobar/media/lion_sleeping.jpg", '\000' <repeats 2016 times>
+(gdb) p env
+$6 = "REQUEST_METHOD=GET\000SERVER_PROTOCOL=HTTP/1.1\000REQUEST_URI=/zoobar/media/lion_sleeping.jpg\000SERVER_NAME=zoobar.org\000\000QUEST_URI=/zoobar/index.cgi/login\000SERVER_NAME=zoobar.org", '\000' <repeats 2268 times>...
+(gdb) p &env_len
+$7 = (size_t *) 0xbfffe604
+(gdb) p env_len
+$8 = 112
+(gdb) c
+Continuing.
+
+Breakpoint 3, http_request_line (fd=5, reqpath=0xbfffde04 "/zoobar/media/lion_sleeping.jpg", reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:60
+warning: Source file is more recent than executable.
+60	    char *sp1, *sp2, *qp, *envp = env;
+(gdb) c
+Continuing.
+
+Breakpoint 4, http_request_line (fd=5, reqpath=0xbfffde04 "/zoobar/media/lion_sleeping.jpg", reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:65
+65	    if (http_read_line(fd, buf) < 0)
+(gdb) p buf
+$9 = "GET\000/zoobar/media/lion_sleeping.jpg\000HTTP/1.1\000\062.168.56.101:8080/zoobar/index.cgi/\000HTTP/1.1", '\000' <repeats 211 times>...
+(gdb) c
+Continuing.
+
+Breakpoint 5, http_request_line (fd=5, reqpath=0xbfffde04 "/zoobar/media/lion_sleeping.jpg", reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:69
+69	    sp1 = strchr(buf, ' ');
+(gdb) p sp1
+$10 = 0x70 <error: Cannot access memory at address 0x70>
+(gdb) c
+Continuing.
+
+Breakpoint 6, http_request_line (fd=5, reqpath=0xbfffde04 "/zoobar/media/lion_sleeping.jpg", reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:74
+74	    if (*sp1 != '/')
+(gdb) p sp1
+$11 = 0xbfffcdc4 "/", 'A' <repeats 199 times>...
+(gdb) c
+Continuing.
+
+Breakpoint 7, http_request_line (fd=5, reqpath=0xbfffde04 "/zoobar/media/lion_sleeping.jpg", reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:77
+77	    sp2 = strchr(sp1, ' ');
+(gdb) p sp2
+$12 = 0x70 <error: Cannot access memory at address 0x70>
+(gdb) c
+Continuing.
+
+Breakpoint 8, http_request_line (fd=5, reqpath=0xbfffde04 "/zoobar/media/lion_sleeping.jpg", reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:80
+80	    *sp2 = '\0';
+(gdb) p sp2
+$13 = 0xbfffd5fb " HTTP/1.0"
+(gdb) c
+Continuing.
+
+Breakpoint 9, http_request_line (fd=5, reqpath=0xbfffde04 "/zoobar/media/lion_sleeping.jpg", reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:81
+81	    sp2++;
+(gdb) p sp2
+$14 = 0xbfffd5fb ""
+(gdb) c
+Continuing.
+
+Breakpoint 10, http_request_line (fd=5, reqpath=0xbfffde04 "/zoobar/media/lion_sleeping.jpg", reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:87
+87	    envp += sprintf(envp, "REQUEST_METHOD=%s", buf) + 1;
+(gdb) p envp
+$15 = 0xbfffe608 "REQUEST_METHOD=GET"
+(gdb) c
+Continuing.
+
+Breakpoint 11, http_request_line (fd=5, reqpath=0xbfffde04 "/zoobar/media/lion_sleeping.jpg", reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:88
+88	    envp += sprintf(envp, "SERVER_PROTOCOL=%s", sp2) + 1;
+(gdb) p envp
+$16 = 0xbfffe61b "SERVER_PROTOCOL=HTTP/1.1"
+(gdb) c
+Continuing.
+
+Breakpoint 12, http_request_line (fd=5, reqpath=0xbfffde04 "/zoobar/media/lion_sleeping.jpg", reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:91
+91	    if ((qp = strchr(sp1, '?')))
+(gdb) p qp
+$17 = 0xbfffe608 "REQUEST_METHOD=GET"
+(gdb) c
+Continuing.
+
+Breakpoint 13, http_request_line (fd=5, reqpath=0xbfffde04 "/zoobar/media/lion_sleeping.jpg", reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:98
+98	    url_decode(reqpath, sp1, reqpath_len);
+(gdb) p re
+Display all 219 possibilities? (y or n)
+re_acquire_state              re_dfa_add_node               re_node_set_insert
+re_acquire_state_context      re_dfastate_t                 re_node_set_insert_last
+read                          re_dfa_t                      re_node_set_merge
+readahead                     re_exec                       re_node_set_remove_at
+readahead.c                   re_fail_stack_ent_t           re_pattern_buffer
+read_alias_file               re_fail_stack_t               reply_body
+read_chk.c                    ref_t                         reply_dscrm
+readdir                       regcomp                       reply_stat
+readdir64                     regcomp.c                     reqpath
+readdir64.c                   regcomp@got.plt               reqpath_len
+readdir64@GLIBC_2.1           regcomp@plt                   request_header
+readdir64@@GLIBC_2.2          reg_errcode_t                 request_type
+readdir64_r                   regerror                      re_registers
+readdir64_r.c                 regex.c                       resbuf
+readdir64_r@GLIBC_2.1         regexec                       resbuf.10386
+readdir64_r@@GLIBC_2.2        regexec.c                     resbuf.10453
+readdir.c                     regexec-compat.c              resbuf.11652
+readdir_r                     regexec@GLIBC_2.0             resbuf.11653
+readdir_r.c                   regexec@@GLIBC_2.3.4          resbuf.11689
+read_encoded_value            regexec@got.plt               resbuf.11691
+read_encoded_value_with_base  regexec@plt                   res_done
+read@got.plt                  regex.h                       re_search
+read_int                      regex_internal.c              re_search_2
+readlink                      regex_internal.h              re_search_2_stub
+readlinkat                    regexp.c                      re_search_internal
+readlinkat.c                  regex_t                       re_search_stub
+readlinkat_chk.c              regfree                       res_error
+readlink_chk.c                region                        re_set_registers
+readonly-area.c               register-atfork.c             re_set_syntax
+read@plt                      register_printf_function      res_goahead
+read_sleb128                  register_printf_modifier      res_hconf.c
+readtcp                       register_printf_specifier     res_hconf.h
+read_uleb128                  register_printf_type          re_sift_context_t
+readunix                      registerrpc                   res_init
+readv                         register_state                res_init.c
+readv.c                       register_tm_clones            res_init@GLIBC_2.0
+realloc                       regmatch_t                    res_libc.c
+realloc_check                 reg-modifier.c                res_modified
+realloc@got.plt               regoff_t                      res_nextns
+reallochook                   reg-printf.c                  resolv.h
+realloc_hook_ini              reg_syntax_t                  resource.h
+realloc@plt                   reg-type.c                    res_sendhookact
+realpath                      rejected_reply                res_send_qhook
+realpath_chk.c                reject_stat                   res_send_rhook
+realpath@GLIBC_2.0            release_handle                res_setoptions
+realpath@@GLIBC_2.3           release_libc_mem              res_state
+re_backref_cache_entry        relocate_args                 res-state.c
+re_bitset_ptr_t               relocate_doit                 re_state_table_entry
+reboot                        relocate_time                 res_thread_freeres
+reboot.c                      reloc_result                  re_string_context_at
+receiver                      remap_file_pages              re_string_destruct
+receiver_fct                  re_match                      re_string_realloc_buffers
+re_charset_t                  re_match_2                    re_string_reconstruct
+re_comp                       re_match_context_t            re_string_t
+re_comp_buf                   re_max_failures               re_string_translate_buffer
+re_compile_fastmap            remove                        re_sub_match_last_t
+re_compile_fastmap_iter       remove.c                      re_sub_match_top_t
+re_compile_fastmap_iter.isra  remove_slotinfo               result
+re_compile_internal           removexattr                   resultproc_t
+re_compile_pattern            remque                        result_type
+re_const_bitset_ptr_t         rename                        re_syntax_options
+re_context_type               renameat                      re_token_t
+rec_strm                      renameat.c                    re_token_type_t
+recv                          rendezvous_request            revoke
+recv_chk.c                    rendezvous_stat               revoke.c
+recvfd                        re_node_set                   rewind
+recvfrom                      re_node_set_add_intersect     rewind.c
+recvfrom_chk.c                re_node_set_compare           rewinddir
+recvmmsg                      re_node_set_compare.part      rewinddir.c
+recvmmsg.c                    re_node_set_contains          rexec
+recvmsg                       re_node_set_init_1            rexec_af
+recvmsg@got.plt               re_node_set_init_copy         rexec.c
+recvmsg@plt                   re_node_set_init_union        rexecoptions
+(gdb) p reqpath
+$18 = 0xbfffde04 "/zoobar/media/lion_sleeping.jpg"
+(gdb) p sp1
+$19 = 0xbfffcdc4 "/", 'A' <repeats 199 times>...
+(gdb) p reqpath_len
+$20 = 2048
+(gdb) b http.c:467
+Breakpoint 17 at 0x804a057: file http.c, line 467.
+(gdb) c
+Continuing.
+
+Breakpoint 17, url_decode (dst=0xbfffe603 "", src=0xbfffd5c3 'A' <repeats 56 times>, dst_size=1) at http.c:467
+467	    *dst = '\0';
+(gdb) p reqpath
+No symbol "reqpath" in current context.
+(gdb) p dst
+$21 = 0xbfffe603 ""
+(gdb) p *dst
+$22 = 0 '\000'
+(gdb) p src
+$23 = 0xbfffd5c3 'A' <repeats 56 times>
+(gdb) p dst
+dst       dst_size  
+(gdb) p dst_size 
+$24 = 1
+(gdb) c
+Continuing.
+
+Breakpoint 14, http_request_line (fd=5, reqpath=0xbfffde04 "/", 'A' <repeats 199 times>..., reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:100
+100	    envp += sprintf(envp, "REQUEST_URI=%s", reqpath) + 1;
+(gdb) p envp
+$25 = 0xbfffe634 "REQUEST_URI=/zoobar/media/lion_sleeping.jpg"
+(gdb) c
+Continuing.
+
+Breakpoint 15, http_request_line (fd=5, reqpath=0xbfffde04 "/", 'A' <repeats 199 times>..., reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:101
+101	    envp += sprintf(envp, "SERVER_NAME=zoobar.org") + 1;
+(gdb) p envp
+$26 = 0xbfffee40 ""
+(gdb) c
+Continuing.
+
+Breakpoint 16, http_request_line (fd=5, reqpath=0xbfffde04 "/", 'A' <repeats 199 times>..., reqpath_len=2048, 
+    env=0xbfffe608 "REQUEST_METHOD=GET", env_len=0xbfffe604) at http.c:103
+103	    *envp = 0;
+(gdb) c
+Continuing.
+
+Breakpoint 2, process_client (fd=5) at zookd.c:74
+74	    for (i = 0; i < nsvcs; ++i)
+(gdb) b zookd.c:76
+Breakpoint 18 at 0x8048f6b: file zookd.c, line 76.
+(gdb) p &svcurls[i]
+$27 = (regex_t *) 0x8048e20 <main+403>
+(gdb) p svcurls[i]
+$28 = {buffer = 0xfcfae824 <error: Cannot access memory at address 0xfcfae824>, allocated = 3230007295, 
+  used = 2223712884, syntax = 531492, fastmap = 0x1508d00 <error: Cannot access memory at address 0x1508d00>, 
+  translate = 0x1024448d <error: Cannot access memory at address 0x1024448d>, re_nsub = 203703433, can_be_null = 1, 
+  regs_allocated = 0, fastmap_accurate = 1, no_sub = 0, not_bol = 0, not_eol = 0, newline_anchor = 1}
+(gdb) p !regexec(&svcurls[i], reqpath, 0, 0, 0)
+
+Program received signal SIGSEGV, Segmentation fault.
+0x400fa603 in __regexec (preg=0x8048e20 <main+403>, string=0xbfffde04 "/", 'A' <repeats 199 times>..., nmatch=0, 
+    pmatch=0x0, eflags=0) at regexec.c:248
+248	regexec.c: No such file or directory.
+The program being debugged was signaled while in a function called from GDB.
+GDB remains in the frame where the signal was received.
+To change this behavior use "set unwindonsignal on".
+Evaluation of the expression containing the function
+(__regexec) will be abandoned.
+When the function is done executing, GDB will silently stop.
+(gdb) c
+Continuing.
+
+Program terminated with signal SIGSEGV, Segmentation fault.
+The program no longer exists.
+(gdb) c

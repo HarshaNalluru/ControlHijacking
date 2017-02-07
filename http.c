@@ -27,7 +27,7 @@ void touch(const char *name) {
         close(fd);
 }
 
-int http_read_line(int fd, char *buf)
+int http_read_line(int fd, char *buf, size_t buf_size)
 {
    size_t i = 0;
     for (;;)
@@ -48,6 +48,12 @@ int http_read_line(int fd, char *buf)
             return 0;
         }
 
+        if ( buf_size <= i+1 )
+        {
+            buf[i] = '\0';
+            return 0;
+        }
+
         i++;
     }
 
@@ -62,7 +68,7 @@ const char *http_request_line(int fd, char *reqpath, size_t reqpath_len, char *e
     /* For lab 2: don't remove this line. */
     touch("http_request_line");
 
-    if (http_read_line(fd, buf) < 0)
+    if (http_read_line(fd, buf, sizeof(buf)) < 0)
         return "Socket IO error";
 
     /* Parse request like "GET /foo.html HTTP/1.0" */
@@ -118,7 +124,7 @@ const char *http_request_headers(int fd)
     /* Now parse HTTP headers */
     for (;;)
     {
-        if (http_read_line(fd, buf) < 0)
+        if (http_read_line(fd, buf, sizeof(buf)) < 0)
             return "Socket IO error";
 
         if (buf[0] == '\0')     /* end of headers */
@@ -271,7 +277,7 @@ void http_serve(int fd, const char *name)
     getcwd(pn, sizeof(pn));
     setenv("DOCUMENT_ROOT", pn, 1);
 
-    strcat(pn, name);
+    strncat(pn, name, 1024);
     split_path(pn);
 
     if (!stat(pn, &st))
@@ -301,7 +307,7 @@ void http_serve_file(int fd, const char *pn)
     if (getenv("PATH_INFO")) {
         /* only attempt PATH_INFO on dynamic resources */
         char buf[1024];
-        sprintf(buf, "%s%s", pn, getenv("PATH_INFO"));
+        snprintf(buf,1024, "%s%s", pn, getenv("PATH_INFO"));
         http_serve_none(fd, buf);
         return;
     }
@@ -345,7 +351,6 @@ void dir_join(char *dst, const char *dirname, const char *filename, int dst_size
     }
     strncat(dst, filename, dst_size);
 }
-
 
 void http_serve_directory(int fd, const char *pn) {
     /* for directories, use index.html or similar in that directory */
@@ -394,7 +399,7 @@ void http_serve_executable(int fd, const char *pn)
     default:
         close(pipefd[1]); /* write end */
         while (1) {
-            if (http_read_line(pipefd[0], buf) < 0) {
+            if (http_read_line(pipefd[0], buf, sizeof(buf)) < 0) {
                 http_err(fd, 500, "Premature end of script headers");
                 close(pipefd[0]);
                 return;
